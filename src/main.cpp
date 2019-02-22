@@ -9,9 +9,9 @@
 #include <iostream>
 #include <thread>
 #include <algorithm>
-#include <util/util.h>
-#include <util/util_file.h>
-#include <util/util_string.h>
+#include <sharedutils/util.h>
+#include <sharedutils/util_file.h>
+#include <sharedutils/util_string.h>
 #include <util_versioned_archive.hpp>
 
 static void print_file_info(uva::FileInfo &fi,bool bPrintName,const std::string &t="")

@@ -5,9 +5,8 @@
 #ifndef __IMPL_UPAD_LUAJIT_HPP__
 #define __IMPL_UPAD_LUAJIT_HPP__
 
-#define UPAD_LUA_PRECOMPILE 1
-#if UPAD_LUA_PRECOMPILE == 1
-	#define USE_LUAJIT 1
+#ifdef UPAD_LUA_PRECOMPILE
+#define USE_LUAJIT
 #endif
 
 #ifdef USE_LUAJIT

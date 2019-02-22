@@ -14,16 +14,6 @@
 #include <iostream>
 #include <cstring>
 
-#pragma comment(lib,"util.lib")
-#pragma comment(lib,"mathutil.lib")
-#pragma comment(lib,"vfilesystem.lib")
-#pragma comment(lib,"util_versioned_archive.lib")
-#pragma comment(lib,"bzip2.lib")
-
-#if UPAD_LUA_PRECOMPILE == 1
-#pragma comment(lib,"lua51.lib")
-#endif
-
 #define PAD_VERSION 0x0001
 const std::array<char,3> ident = {'P','A','D'};
 
