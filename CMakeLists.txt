@@ -64,7 +64,9 @@ add_include_dir(LuaJIT)
 
 set(CONFIG_PRECOMPILE_LUA_FILES "1" CACHE BOOL "Precompile Lua-files before adding them to an archive.")
 
-set(DEFINITIONS)
+set(DEFINITIONS
+	UVA_STATIC
+)
 
 if($(CONFIG_PRECOMPILE_LUA_FILES) MATCHES ON)
 	list(APPEND DEFINITIONS UPAD_LUA_PRECOMPILE)
