@@ -60,7 +60,6 @@ add_include_dir(sharedutils)
 add_include_dir(mathutil)
 add_include_dir(vfilesystem)
 add_include_dir(util_versioned_archive)
-add_include_dir(LuaJIT)
 
 set(CONFIG_PRECOMPILE_LUA_FILES "1" CACHE BOOL "Precompile Lua-files before adding them to an archive.")
 
@@ -68,8 +67,10 @@ set(DEFINITIONS
 	UVA_STATIC
 )
 
-if($(CONFIG_PRECOMPILE_LUA_FILES) MATCHES ON)
+if($(CONFIG_PRECOMPILE_LUA_FILES))
+	add_include_dir(LuaJIT)
 	list(APPEND DEFINITIONS UPAD_LUA_PRECOMPILE)
+	list(APPEND DEFINITIONS USE_LUAJIT)
 endif()
 
 ##### CONFIGURATION #####
@@ -78,7 +79,7 @@ set(LIB_TYPE STATIC)
 if(ENABLE_STATIC_LIBRARY_FLAG MATCHES 1)
 	set(CONFIG_STATIC_LIBRARY 0 CACHE BOOL "Build as static library?")
 endif()
-if((DEFINED CONFIG_STATIC_LIBRARY) AND (${CONFIG_STATIC_LIBRARY} MATCHES ON))
+if(DEFINED ${CONFIG_STATIC_LIBRARY} AND ${CONFIG_STATIC_LIBRARY})
 	set(LIB_TYPE STATIC)
 endif()
 
@@ -118,7 +119,7 @@ endforeach(INCLUDE_PATH)
 
 set(TARGET_PROPERTIES LINKER_LANGUAGE CXX)
 if(DEFINED PRECOMPILED_HEADER)
-	set(TARGET_PROPERTIES ${TARGET_PROPERTIES} COMPILE_FLAGS /Yu"${PRECOMPILED_HEADER}.h")
-	set_source_files_properties("${CMAKE_CURRENT_LIST_DIR}/src/${PRECOMPILED_HEADER}.cpp" PROPERTIES COMPILE_FLAGS "/Yc${PRECOMPILED_HEADER}.h")
+	include(PrecompiledHeader.cmake)
+	add_precompiled_header(${PROJ_NAME} "src/${PRECOMPILED_HEADER}.h" c++17 FORCEINCLUDE)
 endif()
 set_target_properties(${PROJ_NAME} PROPERTIES ${TARGET_PROPERTIES})

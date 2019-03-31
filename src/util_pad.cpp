@@ -13,6 +13,13 @@
 #include <util_versioned_archive.hpp>
 #include <iostream>
 #include <cstring>
+#if UPAD_LUA_PRECOMPILE == 1
+extern "C" {
+	#include "lua.h"
+	#include "lualib.h"
+	#include "lauxlib.h"
+}
+#endif
 
 #define PAD_VERSION 0x0001
 const std::array<char,3> ident = {'P','A','D'};
@@ -52,7 +59,9 @@ static bool write_header(VFilePtrReal &f,std::shared_ptr<upad::PADPackage::Heade
 	return true;
 }
 
+#if UPAD_LUA_PRECOMPILE == 1
 static std::vector<uint8_t> *s_compiledLuaData = nullptr;
+struct lua_State;
 static int lua_write_binary(lua_State*,unsigned char *str,size_t len,struct luaL_Buffer*)
 {
 	if(s_compiledLuaData == nullptr)
@@ -76,6 +85,7 @@ static void lua_compile(lua_State *l,std::vector<uint8_t> &data)
 #endif
 	s_compiledLuaData = nullptr;
 }
+#endif
 
 void upad::compose(const util::Version &version,const std::string &updateListFile,const std::string &archiveFile)
 {
@@ -87,7 +97,11 @@ void upad::compose(const util::Version &version,const std::string &updateListFil
 	auto header = std::make_shared<PADPackage::Header>();
 	result = uva::ArchiveFile::PublishUpdate(
 		newVersion,updateListFile,archiveFile,
-		std::bind(read_header,std::placeholders::_1,header),std::bind(write_header,std::placeholders::_1,header),[l](std::string &fname,std::string &archiveName,std::vector<uint8_t> &data) {
+		std::bind(read_header,std::placeholders::_1,header),std::bind(write_header,std::placeholders::_1,header),[
+#if UPAD_LUA_PRECOMPILE == 1
+			l
+#endif
+		](std::string &fname,std::string &archiveName,std::vector<uint8_t> &data) {
 #if UPAD_LUA_PRECOMPILE == 1
 		std::string ext;
 		if(ufile::get_extension(fname,&ext) == true && ustring::compare(ext,"lua",false) == true)
