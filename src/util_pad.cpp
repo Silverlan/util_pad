@@ -366,7 +366,6 @@ bool upad::PackageManager::GetFileFlags(const std::string &name,fsys::SearchFlag
 	}
 	return false;
 }
-
 VFilePtr upad::PackageManager::OpenFile(const std::string &package,const std::string &path,bool bBinary,fsys::SearchFlags includeFlags,fsys::SearchFlags excludeFlags) const
 {
 	auto it = m_packages.find(package);
