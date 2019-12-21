@@ -61,7 +61,7 @@ add_include_dir(mathutil)
 add_include_dir(vfilesystem)
 add_include_dir(util_versioned_archive)
 
-set(CONFIG_PRECOMPILE_LUA_FILES "1" CACHE BOOL "Precompile Lua-files before adding them to an archive.")
+option(CONFIG_PRECOMPILE_LUA_FILES "Precompile Lua-files before adding them to an archive." ON)
 
 set(DEFINITIONS
 	UVA_STATIC
@@ -76,8 +76,8 @@ endif()
 ##### CONFIGURATION #####
 
 set(LIB_TYPE STATIC)
-if(ENABLE_STATIC_LIBRARY_FLAG MATCHES 1)
-	set(CONFIG_STATIC_LIBRARY 0 CACHE BOOL "Build as static library?")
+if(ENABLE_STATIC_LIBRARY_FLAG)
+	option(CONFIG_STATIC_LIBRARY "Build as static library?" OFF)
 endif()
 if(DEFINED ${CONFIG_STATIC_LIBRARY} AND ${CONFIG_STATIC_LIBRARY})
 	set(LIB_TYPE STATIC)
