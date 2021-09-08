@@ -104,7 +104,7 @@ void upad::compose(const util::Version &version,const std::string &updateListFil
 		](std::string &fname,std::string &archiveName,std::vector<uint8_t> &data) {
 #if UPAD_LUA_PRECOMPILE == 1
 		std::string ext;
-		if(ufile::get_extension(fname,&ext) == true && ustring::compare(ext,"lua",false) == true)
+		if(ufile::get_extension(fname,&ext) == true && ustring::compare<std::string>(ext,"lua",false) == true)
 		{
 			auto status = luaL_loadfile(l,fname.c_str());
 			if(status)
