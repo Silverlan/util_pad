@@ -10,25 +10,22 @@
 #include <fsys/fsys_package.hpp>
 #include <fsys/filesystem.h>
 
-namespace upad
-{
+namespace upad {
 	class PADPackage;
-	class VFilePtrInternalPack
-		: public VFilePtrInternal
-	{
+	class VFilePtrInternalPack : public VFilePtrInternal {
 		std::vector<uint8_t> m_data;
 		uint64_t m_offset = 0;
 		bool m_bValid = false;
 		bool m_bEof = false;
-	public:
+	  public:
 		VFilePtrInternalPack();
-		size_t Read(void *ptr,size_t size) override;
+		size_t Read(void *ptr, size_t size) override;
 		unsigned long long Tell() override;
 		void Seek(unsigned long long offset) override;
 		int32_t Eof() override;
 		int32_t ReadChar() override;
 		unsigned long long GetSize() override;
-		bool Construct(upad::PADPackage &package,const std::string &fname,bool bBinary);
+		bool Construct(upad::PADPackage &package, const std::string &fname, bool bBinary);
 	};
 };
 
