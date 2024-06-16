@@ -6,7 +6,9 @@ set(PROJ_NAME util_pad)
 pr_add_library(${PROJ_NAME} STATIC)
 
 pr_add_dependency(${PROJ_NAME} util_versioned_archive TARGET PUBLIC)
-pr_add_external_dependency(${PROJ_NAME} lua LIBRARY)
+if(WIN32)
+	pr_add_external_dependency(${PROJ_NAME} lua LIBRARY)
+endif()
 
 pr_add_headers(${PROJ_NAME} "include/")
 pr_add_sources(${PROJ_NAME} "src/")
