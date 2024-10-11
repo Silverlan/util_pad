@@ -2,16 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "util_vfileptr.hpp"
-#include "util_pad.hpp"
+module;
+
 #include <cstring>
+#include <fsys/filesystem.h>
+
+module pragma.pad;
 
 import pragma.uva;
 
 //#define MAX_BUFFER_SIZE 5242880
-upad::VFilePtrInternalPack::VFilePtrInternalPack() : VFilePtrInternal() { m_type = VFILE_PACKAGE; }
+pragma::pad::VFilePtrInternalPack::VFilePtrInternalPack() : VFilePtrInternal() { m_type = VFILE_PACKAGE; }
 
-bool upad::VFilePtrInternalPack::Construct(upad::PADPackage &package, const std::string &fname, bool bBinary)
+bool pragma::pad::VFilePtrInternalPack::Construct(pragma::pad::PADPackage &package, const std::string &fname, bool bBinary)
 {
 	m_bBinary = bBinary;
 	m_bRead = true;
@@ -22,7 +25,7 @@ bool upad::VFilePtrInternalPack::Construct(upad::PADPackage &package, const std:
 	return true;
 }
 
-size_t upad::VFilePtrInternalPack::Read(void *ptr, size_t size)
+size_t pragma::pad::VFilePtrInternalPack::Read(void *ptr, size_t size)
 {
 	if(Eof() == EOF)
 		return std::numeric_limits<size_t>::max();
@@ -40,15 +43,15 @@ size_t upad::VFilePtrInternalPack::Read(void *ptr, size_t size)
 	return size;
 }
 
-unsigned long long upad::VFilePtrInternalPack::GetSize() { return m_data.size(); }
-unsigned long long upad::VFilePtrInternalPack::Tell() { return m_offset; }
-void upad::VFilePtrInternalPack::Seek(unsigned long long offset)
+unsigned long long pragma::pad::VFilePtrInternalPack::GetSize() { return m_data.size(); }
+unsigned long long pragma::pad::VFilePtrInternalPack::Tell() { return m_offset; }
+void pragma::pad::VFilePtrInternalPack::Seek(unsigned long long offset)
 {
 	m_offset = offset;
 	m_bEof = false;
 }
-int32_t upad::VFilePtrInternalPack::Eof() { return !m_bEof ? 0 : EOF; }
-int32_t upad::VFilePtrInternalPack::ReadChar()
+int32_t pragma::pad::VFilePtrInternalPack::Eof() { return !m_bEof ? 0 : EOF; }
+int32_t pragma::pad::VFilePtrInternalPack::ReadChar()
 {
 	if(m_offset >= GetSize()) {
 		m_bEof = true;

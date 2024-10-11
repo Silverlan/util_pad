@@ -2,8 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef __UTIL_PAD_HPP__
-#define __UTIL_PAD_HPP__
+module;
 
 #include <unordered_map>
 #include <sharedutils/util_version.h>
@@ -16,11 +15,12 @@
 #include <uva_archive_file.hpp>
 #endif
 
-namespace pragma::uva {
-	class ArchiveFile;
-	struct FileInfo;
-};
-namespace upad {
+export module pragma.pad;
+
+import :vfileptr;
+import pragma.uva;
+
+export namespace pragma::pad {
 	class PackageManager;
 	PackageManager *link_to_file_system();
 	void compose(const util::Version &version, const std::string &updateListFile, const std::string &archiveFile);
@@ -74,5 +74,3 @@ namespace upad {
 		std::unordered_map<std::string, std::unique_ptr<PADPackage>> m_packages;
 	};
 };
-
-#endif

@@ -2,15 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef __UTIL_VFILEPTR_HPP__
-#define __UTIL_VFILEPTR_HPP__
+module;
 
 #include <fsys/vfileptr.h>
 #include <vector>
 #include <fsys/fsys_package.hpp>
 #include <fsys/filesystem.h>
 
-namespace upad {
+export module pragma.pad:vfileptr;
+
+namespace pragma::pad {
 	class PADPackage;
 	class VFilePtrInternalPack : public VFilePtrInternal {
 		std::vector<uint8_t> m_data;
@@ -25,8 +26,6 @@ namespace upad {
 		int32_t Eof() override;
 		int32_t ReadChar() override;
 		unsigned long long GetSize() override;
-		bool Construct(upad::PADPackage &package, const std::string &fname, bool bBinary);
+		bool Construct(PADPackage &package, const std::string &fname, bool bBinary);
 	};
 };
-
-#endif

@@ -10,8 +10,7 @@ if(WIN32)
 	pr_add_external_dependency(${PROJ_NAME} lua LIBRARY)
 endif()
 
-pr_add_headers(${PROJ_NAME} "include/")
-pr_add_sources(${PROJ_NAME} "src/")
+pr_init_module(${PROJ_NAME})
 
 pr_add_compile_definitions(
 	${PROJ_NAME}

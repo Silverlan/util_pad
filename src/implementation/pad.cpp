@@ -2,9 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "util_pad.hpp"
-#include "util_vfileptr.hpp"
-#include "impl_upad_luajit.hpp"
+module;
+
 #include <fsys/filesystem.h>
 #include <sharedutils/util.h>
 #include <sharedutils/util_string.h>
@@ -13,20 +12,18 @@
 #include <iostream>
 #include <cstring>
 #if UPAD_LUA_PRECOMPILE == 1
-extern "C" {
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-}
+#include "lua_wrapper.hpp"
 #endif
 
 #define PAD_VERSION 0x0001
+
+module pragma.pad;
 
 import pragma.uva;
 
 const std::array<char, 3> ident = {'P', 'A', 'D'};
 
-static bool read_header(VFilePtr &f, std::shared_ptr<upad::PADPackage::Header> header)
+static bool read_header(VFilePtr &f, std::shared_ptr<pragma::pad::PADPackage::Header> header)
 {
 	std::array<char, ident.size()> hdIdent = {};
 	for(auto &c : hdIdent)
@@ -42,7 +39,7 @@ static bool read_header(VFilePtr &f, std::shared_ptr<upad::PADPackage::Header> h
 	return true;
 }
 
-static bool write_header(VFilePtrReal &f, std::shared_ptr<upad::PADPackage::Header> header)
+static bool write_header(VFilePtrReal &f, std::shared_ptr<pragma::pad::PADPackage::Header> header)
 {
 	f->Write(ident.data(), ident.size());
 	f->Write<uint32_t>(PAD_VERSION);
@@ -89,7 +86,7 @@ static void lua_compile(lua_State *l, std::vector<uint8_t> &data)
 }
 #endif
 
-void upad::compose(const util::Version &version, const std::string &updateListFile, const std::string &archiveFile)
+void pragma::pad::compose(const util::Version &version, const std::string &updateListFile, const std::string &archiveFile)
 {
 	auto result = pragma::uva::ArchiveFile::UpdateResult::Success;
 #if UPAD_LUA_PRECOMPILE == 1
@@ -149,7 +146,7 @@ void upad::compose(const util::Version &version, const std::string &updateListFi
 	}
 }
 
-void upad::extract(const std::string &archiveFile, const std::string &outPath)
+void pragma::pad::extract(const std::string &archiveFile, const std::string &outPath)
 {
 	auto archive = open(archiveFile);
 	if(archive == nullptr)
@@ -157,13 +154,13 @@ void upad::extract(const std::string &archiveFile, const std::string &outPath)
 	archive->ExtractAll(outPath);
 }
 
-std::unique_ptr<pragma::uva::ArchiveFile> upad::open(const std::string &archiveFile)
+std::unique_ptr<pragma::uva::ArchiveFile> pragma::pad::open(const std::string &archiveFile)
 {
 	std::shared_ptr<PADPackage::Header> header = nullptr;
 	return open(archiveFile, header);
 }
 
-std::unique_ptr<pragma::uva::ArchiveFile> upad::open(const std::string &archiveFile, std::shared_ptr<PADPackage::Header> &header)
+std::unique_ptr<pragma::uva::ArchiveFile> pragma::pad::open(const std::string &archiveFile, std::shared_ptr<PADPackage::Header> &header)
 {
 	header = std::make_shared<PADPackage::Header>();
 	return std::unique_ptr<pragma::uva::ArchiveFile>(pragma::uva::ArchiveFile::Open(archiveFile, std::bind(read_header, std::placeholders::_1, header), std::bind(write_header, std::placeholders::_1, header)));
@@ -171,9 +168,9 @@ std::unique_ptr<pragma::uva::ArchiveFile> upad::open(const std::string &archiveF
 
 /////////////////////////
 
-upad::PADPackage::Header::Header() { packageId.fill(0); }
+pragma::pad::PADPackage::Header::Header() { packageId.fill(0); }
 
-std::unique_ptr<upad::PADPackage> upad::PADPackage::Create(const std::string &package, fsys::SearchFlags searchFlags)
+std::unique_ptr<pragma::pad::PADPackage> pragma::pad::PADPackage::Create(const std::string &package, fsys::SearchFlags searchFlags)
 {
 	auto ptrPackage = std::unique_ptr<PADPackage>(new PADPackage(searchFlags));
 	ptrPackage->m_packageName = package;
@@ -182,30 +179,30 @@ std::unique_ptr<upad::PADPackage> upad::PADPackage::Create(const std::string &pa
 	return ptrPackage;
 }
 
-upad::PADPackage::PADPackage(fsys::SearchFlags searchFlags) : Package(searchFlags), m_header(std::make_shared<Header>()) {}
+pragma::pad::PADPackage::PADPackage(fsys::SearchFlags searchFlags) : Package(searchFlags), m_header(std::make_shared<Header>()) {}
 
-const pragma::uva::ArchiveFile *upad::PADPackage::GetArchiveFile() const { return const_cast<PADPackage *>(this)->GetArchiveFile(); }
-pragma::uva::ArchiveFile *upad::PADPackage::GetArchiveFile() { return m_arcFile.get(); }
+const pragma::uva::ArchiveFile *pragma::pad::PADPackage::GetArchiveFile() const { return const_cast<PADPackage *>(this)->GetArchiveFile(); }
+pragma::uva::ArchiveFile *pragma::pad::PADPackage::GetArchiveFile() { return m_arcFile.get(); }
 
-const upad::PADPackage::Header &upad::PADPackage::GetHeader() const { return *m_header; }
-uint32_t upad::PADPackage::GetVersion() const { return m_header->version; }
-uint32_t upad::PADPackage::GetFlags() const { return m_header->flags; }
-std::string upad::PADPackage::GetPackageId() const
+const pragma::pad::PADPackage::Header &pragma::pad::PADPackage::GetHeader() const { return *m_header; }
+uint32_t pragma::pad::PADPackage::GetVersion() const { return m_header->version; }
+uint32_t pragma::pad::PADPackage::GetFlags() const { return m_header->flags; }
+std::string pragma::pad::PADPackage::GetPackageId() const
 {
 	auto r = std::string(m_header->packageId.data(), m_header->packageId.size() - 1);
 	if(r.find_first_not_of(' ') == std::string::npos)
 		return "";
 	return r;
 }
-util::Version upad::PADPackage::GetPackageVersion()
+util::Version pragma::pad::PADPackage::GetPackageVersion()
 {
 	auto &versions = m_arcFile->GetVersions();
 	if(versions.empty() == true)
 		return {};
 	return versions.front().version;
 }
-void upad::PADPackage::Close() { m_arcFile = nullptr; }
-bool upad::PADPackage::Open()
+void pragma::pad::PADPackage::Close() { m_arcFile = nullptr; }
+bool pragma::pad::PADPackage::Open()
 {
 	if(m_arcFile != nullptr)
 		return true;
@@ -215,7 +212,7 @@ bool upad::PADPackage::Open()
 
 /////////////////////////
 
-VFilePtr upad::open_package_file(upad::PADPackage &package, const std::string &fname, bool bBinary, fsys::SearchFlags includeFlags, fsys::SearchFlags excludeFlags)
+VFilePtr pragma::pad::open_package_file(pragma::pad::PADPackage &package, const std::string &fname, bool bBinary, fsys::SearchFlags includeFlags, fsys::SearchFlags excludeFlags)
 {
 	auto searchFlags = package.GetSearchFlags();
 	if((includeFlags & searchFlags) != fsys::SearchFlags::None && ((includeFlags & fsys::SearchFlags::NoMounts) == fsys::SearchFlags::None || (includeFlags & fsys::SearchFlags::Package) == fsys::SearchFlags::Package)) {
@@ -226,7 +223,7 @@ VFilePtr upad::open_package_file(upad::PADPackage &package, const std::string &f
 	return nullptr;
 }
 
-pragma::uva::FileInfo *upad::get_file_info(upad::PADPackage &package, const std::string &fname, const fsys::SearchFlags *searchFlags)
+pragma::uva::FileInfo *pragma::pad::get_file_info(pragma::pad::PADPackage &package, const std::string &fname, const fsys::SearchFlags *searchFlags)
 {
 	if(searchFlags == nullptr || ((*searchFlags & package.GetSearchFlags()) != fsys::SearchFlags::None && ((*searchFlags & fsys::SearchFlags::NoMounts) == fsys::SearchFlags::None || (*searchFlags & fsys::SearchFlags::Package) == fsys::SearchFlags::Package))) {
 		auto *archFile = package.GetArchiveFile();
@@ -235,16 +232,16 @@ pragma::uva::FileInfo *upad::get_file_info(upad::PADPackage &package, const std:
 	return nullptr;
 }
 
-upad::PackageManager *upad::link_to_file_system()
+pragma::pad::PackageManager *pragma::pad::link_to_file_system()
 {
-	auto *padManager = new upad::PackageManager();
-	FileManager::RegisterPackageManager("upad", std::unique_ptr<upad::PackageManager>(padManager));
+	auto *padManager = new pragma::pad::PackageManager();
+	FileManager::RegisterPackageManager("upad", std::unique_ptr<pragma::pad::PackageManager>(padManager));
 	return padManager;
 }
 
 /////////////////////////
 
-upad::PADPackage *upad::PackageManager::GetPackage(std::string package)
+pragma::pad::PADPackage *pragma::pad::PackageManager::GetPackage(std::string package)
 {
 	ustring::to_lower(package);
 	std::string ext;
@@ -255,14 +252,14 @@ upad::PADPackage *upad::PackageManager::GetPackage(std::string package)
 		return nullptr;
 	return it->second.get();
 }
-fsys::Package *upad::PackageManager::LoadPackage(std::string package, fsys::SearchFlags searchMode)
+fsys::Package *pragma::pad::PackageManager::LoadPackage(std::string package, fsys::SearchFlags searchMode)
 {
 	searchMode |= fsys::SearchFlags::Package;
 	searchMode &= ~fsys::SearchFlags::Virtual;
 	searchMode &= ~fsys::SearchFlags::Local;
 	searchMode &= ~fsys::SearchFlags::LocalRoot;
 	package = GetPackageFileName(package);
-	auto ptrPackage = upad::PADPackage::Create(package, searchMode);
+	auto ptrPackage = pragma::pad::PADPackage::Create(package, searchMode);
 	if(ptrPackage == nullptr)
 		return nullptr;
 	auto *p = ptrPackage.get();
@@ -270,7 +267,7 @@ fsys::Package *upad::PackageManager::LoadPackage(std::string package, fsys::Sear
 	return p;
 }
 
-std::string upad::PackageManager::GetPackageFileName(std::string package) const
+std::string pragma::pad::PackageManager::GetPackageFileName(std::string package) const
 {
 	ustring::to_lower(package);
 	std::string ext;
@@ -279,7 +276,7 @@ std::string upad::PackageManager::GetPackageFileName(std::string package) const
 	return package;
 }
 
-void upad::PackageManager::ClearPackages(fsys::SearchFlags searchMode)
+void pragma::pad::PackageManager::ClearPackages(fsys::SearchFlags searchMode)
 {
 	for(auto it = m_packages.begin(); it != m_packages.end();) {
 		auto &ptrPackage = it->second;
@@ -290,7 +287,7 @@ void upad::PackageManager::ClearPackages(fsys::SearchFlags searchMode)
 	}
 }
 
-void upad::PackageManager::FindFiles(const std::string &target, const std::string &path, std::vector<std::string> *resfiles, std::vector<std::string> *resdirs, bool bKeepPath, fsys::SearchFlags includeFlags) const
+void pragma::pad::PackageManager::FindFiles(const std::string &target, const std::string &path, std::vector<std::string> *resfiles, std::vector<std::string> *resdirs, bool bKeepPath, fsys::SearchFlags includeFlags) const
 {
 	for(auto &pair : m_packages) {
 		if((includeFlags & pair.second->GetSearchFlags()) != fsys::SearchFlags::None && ((includeFlags & fsys::SearchFlags::NoMounts) == fsys::SearchFlags::None || (includeFlags & fsys::SearchFlags::Package) == fsys::SearchFlags::Package)) {
@@ -312,10 +309,10 @@ void upad::PackageManager::FindFiles(const std::string &target, const std::strin
 	}
 }
 
-bool upad::PackageManager::GetSize(const std::string &name, uint64_t &size) const
+bool pragma::pad::PackageManager::GetSize(const std::string &name, uint64_t &size) const
 {
 	for(auto &pair : m_packages) {
-		auto *fileInfo = upad::get_file_info(*pair.second, name);
+		auto *fileInfo = pragma::pad::get_file_info(*pair.second, name);
 		if(fileInfo == nullptr)
 			continue;
 		size = fileInfo->IsDirectory() ? 0 : fileInfo->sizeUncompressed;
@@ -324,19 +321,19 @@ bool upad::PackageManager::GetSize(const std::string &name, uint64_t &size) cons
 	return false;
 }
 
-bool upad::PackageManager::Exists(const std::string &name, fsys::SearchFlags includeFlags) const
+bool pragma::pad::PackageManager::Exists(const std::string &name, fsys::SearchFlags includeFlags) const
 {
 	for(auto &pair : m_packages) {
-		if(upad::get_file_info(*pair.second, name, &includeFlags) != nullptr)
+		if(pragma::pad::get_file_info(*pair.second, name, &includeFlags) != nullptr)
 			return true;
 	}
 	return false;
 }
 
-bool upad::PackageManager::GetFileFlags(const std::string &name, fsys::SearchFlags includeFlags, uint64_t &flags) const
+bool pragma::pad::PackageManager::GetFileFlags(const std::string &name, fsys::SearchFlags includeFlags, uint64_t &flags) const
 {
 	for(auto &pair : m_packages) {
-		auto *info = upad::get_file_info(*pair.second, name, &includeFlags);
+		auto *info = pragma::pad::get_file_info(*pair.second, name, &includeFlags);
 		if(info == nullptr)
 			continue;
 		flags = FVFILE_READONLY | FVFILE_PACKAGE;
@@ -348,19 +345,19 @@ bool upad::PackageManager::GetFileFlags(const std::string &name, fsys::SearchFla
 	}
 	return false;
 }
-VFilePtr upad::PackageManager::OpenFile(const std::string &package, const std::string &path, bool bBinary, fsys::SearchFlags includeFlags, fsys::SearchFlags excludeFlags) const
+VFilePtr pragma::pad::PackageManager::OpenFile(const std::string &package, const std::string &path, bool bBinary, fsys::SearchFlags includeFlags, fsys::SearchFlags excludeFlags) const
 {
 	auto it = m_packages.find(package);
 	if(it == m_packages.end())
 		return nullptr;
-	return upad::open_package_file(*it->second, path, bBinary, includeFlags, excludeFlags);
+	return pragma::pad::open_package_file(*it->second, path, bBinary, includeFlags, excludeFlags);
 }
 
-VFilePtr upad::PackageManager::OpenFile(const std::string &path, bool bBinary, fsys::SearchFlags includeFlags, fsys::SearchFlags excludeFlags) const
+VFilePtr pragma::pad::PackageManager::OpenFile(const std::string &path, bool bBinary, fsys::SearchFlags includeFlags, fsys::SearchFlags excludeFlags) const
 {
 	for(auto &pair : m_packages) {
 		if((includeFlags & pair.second->GetSearchFlags()) != fsys::SearchFlags::None && ((includeFlags & fsys::SearchFlags::NoMounts) == fsys::SearchFlags::None || (includeFlags & fsys::SearchFlags::Package) == fsys::SearchFlags::Package)) {
-			auto pfile = upad::open_package_file(*pair.second, path, bBinary, includeFlags, excludeFlags);
+			auto pfile = pragma::pad::open_package_file(*pair.second, path, bBinary, includeFlags, excludeFlags);
 			if(pfile != nullptr)
 				return pfile;
 		}
