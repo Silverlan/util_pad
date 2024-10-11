@@ -16,7 +16,7 @@
 #include <uva_archive_file.hpp>
 #endif
 
-namespace uva {
+namespace pragma::uva {
 	class ArchiveFile;
 	struct FileInfo;
 };
@@ -36,8 +36,8 @@ namespace upad {
 		};
 		static std::unique_ptr<PADPackage> Create(const std::string &package, fsys::SearchFlags searchFlags);
 		PADPackage(fsys::SearchFlags searchFlags);
-		const uva::ArchiveFile *GetArchiveFile() const;
-		uva::ArchiveFile *GetArchiveFile();
+		const pragma::uva::ArchiveFile *GetArchiveFile() const;
+		pragma::uva::ArchiveFile *GetArchiveFile();
 
 		const Header &GetHeader() const;
 		uint32_t GetVersion() const;
@@ -49,13 +49,13 @@ namespace upad {
 	  private:
 		std::shared_ptr<Header> m_header = nullptr;
 		std::string m_packageName;
-		std::unique_ptr<uva::ArchiveFile> m_arcFile = nullptr;
+		std::unique_ptr<pragma::uva::ArchiveFile> m_arcFile = nullptr;
 	};
 	VFilePtr open_package_file(PADPackage &package, const std::string &fname, bool bBinary, fsys::SearchFlags includeFlags, fsys::SearchFlags excludeFlags);
-	uva::FileInfo *get_file_info(PADPackage &package, const std::string &fname, const fsys::SearchFlags *searchFlags = nullptr);
+	pragma::uva::FileInfo *get_file_info(PADPackage &package, const std::string &fname, const fsys::SearchFlags *searchFlags = nullptr);
 
-	std::unique_ptr<uva::ArchiveFile> open(const std::string &archiveFile);
-	std::unique_ptr<uva::ArchiveFile> open(const std::string &archiveFile, std::shared_ptr<PADPackage::Header> &header);
+	std::unique_ptr<pragma::uva::ArchiveFile> open(const std::string &archiveFile);
+	std::unique_ptr<pragma::uva::ArchiveFile> open(const std::string &archiveFile, std::shared_ptr<PADPackage::Header> &header);
 
 	class PackageManager : public fsys::PackageManager {
 	  public:

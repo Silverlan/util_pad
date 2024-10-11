@@ -4,8 +4,9 @@
 
 #include "util_vfileptr.hpp"
 #include "util_pad.hpp"
-#include <util_versioned_archive.hpp>
 #include <cstring>
+
+import pragma.uva;
 
 //#define MAX_BUFFER_SIZE 5242880
 upad::VFilePtrInternalPack::VFilePtrInternalPack() : VFilePtrInternal() { m_type = VFILE_PACKAGE; }

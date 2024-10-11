@@ -10,7 +10,6 @@
 #include <sharedutils/util_string.h>
 #include <sharedutils/util_file.h>
 #include <array>
-#include <util_versioned_archive.hpp>
 #include <iostream>
 #include <cstring>
 #if UPAD_LUA_PRECOMPILE == 1
@@ -22,6 +21,9 @@ extern "C" {
 #endif
 
 #define PAD_VERSION 0x0001
+
+import pragma.uva;
+
 const std::array<char, 3> ident = {'P', 'A', 'D'};
 
 static bool read_header(VFilePtr &f, std::shared_ptr<upad::PADPackage::Header> header)
@@ -89,13 +91,13 @@ static void lua_compile(lua_State *l, std::vector<uint8_t> &data)
 
 void upad::compose(const util::Version &version, const std::string &updateListFile, const std::string &archiveFile)
 {
-	auto result = uva::ArchiveFile::UpdateResult::Success;
+	auto result = pragma::uva::ArchiveFile::UpdateResult::Success;
 #if UPAD_LUA_PRECOMPILE == 1
 	auto *l = luaL_newstate();
 #endif
 	auto newVersion = version;
 	auto header = std::make_shared<PADPackage::Header>();
-	result = uva::ArchiveFile::PublishUpdate(newVersion, updateListFile, archiveFile, std::bind(read_header, std::placeholders::_1, header), std::bind(write_header, std::placeholders::_1, header),
+	result = pragma::uva::ArchiveFile::PublishUpdate(newVersion, updateListFile, archiveFile, std::bind(read_header, std::placeholders::_1, header), std::bind(write_header, std::placeholders::_1, header),
 	  [
 #if UPAD_LUA_PRECOMPILE == 1
 	    l
@@ -123,22 +125,22 @@ void upad::compose(const util::Version &version, const std::string &updateListFi
 	lua_close(l);
 #endif
 	switch(result) {
-	case uva::ArchiveFile::UpdateResult::Success:
+	case pragma::uva::ArchiveFile::UpdateResult::Success:
 		std::cout << "Update published successfully! New version: " << newVersion.ToString() << std::endl;
 		break;
-	case uva::ArchiveFile::UpdateResult::ListFileNotFound:
+	case pragma::uva::ArchiveFile::UpdateResult::ListFileNotFound:
 		std::cout << "Update failed: Update list not found!" << std::endl;
 		break;
-	case uva::ArchiveFile::UpdateResult::NothingToUpdate:
+	case pragma::uva::ArchiveFile::UpdateResult::NothingToUpdate:
 		std::cout << "Update failed: Nothing to update!" << std::endl;
 		break;
-	case uva::ArchiveFile::UpdateResult::UnableToCreateArchiveFile:
+	case pragma::uva::ArchiveFile::UpdateResult::UnableToCreateArchiveFile:
 		std::cout << "Update failed: Unable to create archive file!" << std::endl;
 		break;
-	case uva::ArchiveFile::UpdateResult::VersionDiscrepancy:
+	case pragma::uva::ArchiveFile::UpdateResult::VersionDiscrepancy:
 		std::cout << "Update failed: Previous version number is greater than new version number!" << std::endl;
 		break;
-	case uva::ArchiveFile::UpdateResult::UnableToRemoveTemporaryFiles:
+	case pragma::uva::ArchiveFile::UpdateResult::UnableToRemoveTemporaryFiles:
 		std::cout << "Update failed: Unable to remove temporary files!" << std::endl;
 		break;
 	default:
@@ -155,16 +157,16 @@ void upad::extract(const std::string &archiveFile, const std::string &outPath)
 	archive->ExtractAll(outPath);
 }
 
-std::unique_ptr<uva::ArchiveFile> upad::open(const std::string &archiveFile)
+std::unique_ptr<pragma::uva::ArchiveFile> upad::open(const std::string &archiveFile)
 {
 	std::shared_ptr<PADPackage::Header> header = nullptr;
 	return open(archiveFile, header);
 }
 
-std::unique_ptr<uva::ArchiveFile> upad::open(const std::string &archiveFile, std::shared_ptr<PADPackage::Header> &header)
+std::unique_ptr<pragma::uva::ArchiveFile> upad::open(const std::string &archiveFile, std::shared_ptr<PADPackage::Header> &header)
 {
 	header = std::make_shared<PADPackage::Header>();
-	return std::unique_ptr<uva::ArchiveFile>(uva::ArchiveFile::Open(archiveFile, std::bind(read_header, std::placeholders::_1, header), std::bind(write_header, std::placeholders::_1, header)));
+	return std::unique_ptr<pragma::uva::ArchiveFile>(pragma::uva::ArchiveFile::Open(archiveFile, std::bind(read_header, std::placeholders::_1, header), std::bind(write_header, std::placeholders::_1, header)));
 }
 
 /////////////////////////
@@ -182,8 +184,8 @@ std::unique_ptr<upad::PADPackage> upad::PADPackage::Create(const std::string &pa
 
 upad::PADPackage::PADPackage(fsys::SearchFlags searchFlags) : Package(searchFlags), m_header(std::make_shared<Header>()) {}
 
-const uva::ArchiveFile *upad::PADPackage::GetArchiveFile() const { return const_cast<PADPackage *>(this)->GetArchiveFile(); }
-uva::ArchiveFile *upad::PADPackage::GetArchiveFile() { return m_arcFile.get(); }
+const pragma::uva::ArchiveFile *upad::PADPackage::GetArchiveFile() const { return const_cast<PADPackage *>(this)->GetArchiveFile(); }
+pragma::uva::ArchiveFile *upad::PADPackage::GetArchiveFile() { return m_arcFile.get(); }
 
 const upad::PADPackage::Header &upad::PADPackage::GetHeader() const { return *m_header; }
 uint32_t upad::PADPackage::GetVersion() const { return m_header->version; }
@@ -207,7 +209,7 @@ bool upad::PADPackage::Open()
 {
 	if(m_arcFile != nullptr)
 		return true;
-	m_arcFile = std::unique_ptr<uva::ArchiveFile>(uva::ArchiveFile::Open(m_packageName, std::bind(read_header, std::placeholders::_1, m_header), std::bind(write_header, std::placeholders::_1, m_header)));
+	m_arcFile = std::unique_ptr<pragma::uva::ArchiveFile>(pragma::uva::ArchiveFile::Open(m_packageName, std::bind(read_header, std::placeholders::_1, m_header), std::bind(write_header, std::placeholders::_1, m_header)));
 	return (m_arcFile != nullptr) ? true : false;
 }
 
@@ -224,7 +226,7 @@ VFilePtr upad::open_package_file(upad::PADPackage &package, const std::string &f
 	return nullptr;
 }
 
-uva::FileInfo *upad::get_file_info(upad::PADPackage &package, const std::string &fname, const fsys::SearchFlags *searchFlags)
+pragma::uva::FileInfo *upad::get_file_info(upad::PADPackage &package, const std::string &fname, const fsys::SearchFlags *searchFlags)
 {
 	if(searchFlags == nullptr || ((*searchFlags & package.GetSearchFlags()) != fsys::SearchFlags::None && ((*searchFlags & fsys::SearchFlags::NoMounts) == fsys::SearchFlags::None || (*searchFlags & fsys::SearchFlags::Package) == fsys::SearchFlags::Package))) {
 		auto *archFile = package.GetArchiveFile();
@@ -292,7 +294,7 @@ void upad::PackageManager::FindFiles(const std::string &target, const std::strin
 {
 	for(auto &pair : m_packages) {
 		if((includeFlags & pair.second->GetSearchFlags()) != fsys::SearchFlags::None && ((includeFlags & fsys::SearchFlags::NoMounts) == fsys::SearchFlags::None || (includeFlags & fsys::SearchFlags::Package) == fsys::SearchFlags::Package)) {
-			std::vector<uva::FileInfo *> results;
+			std::vector<pragma::uva::FileInfo *> results;
 			auto *archFile = pair.second->GetArchiveFile();
 			if(archFile != nullptr) {
 				archFile->SearchFiles(target, results);
