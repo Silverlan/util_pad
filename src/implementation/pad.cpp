@@ -60,8 +60,7 @@ static bool write_header(VFilePtrReal &f, std::shared_ptr<pragma::pad::PADPackag
 
 #if UPAD_LUA_PRECOMPILE == 1
 static std::vector<uint8_t> *s_compiledLuaData = nullptr;
-struct lua_State;
-static int lua_write_binary(lua_State *, unsigned char *str, size_t len, struct luaL_Buffer *)
+static int lua_write_binary(lua_State *, unsigned char *str, size_t len, luaL_Buffer *)
 {
 	if(s_compiledLuaData == nullptr)
 		return 0;

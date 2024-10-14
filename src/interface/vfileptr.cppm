@@ -11,8 +11,9 @@ module;
 
 export module pragma.pad:vfileptr;
 
+export namespace pragma::pad { class PADPackage; };
+
 namespace pragma::pad {
-	class PADPackage;
 	class VFilePtrInternalPack : public VFilePtrInternal {
 		std::vector<uint8_t> m_data;
 		uint64_t m_offset = 0;

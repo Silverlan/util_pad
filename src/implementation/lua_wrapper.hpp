@@ -11,4 +11,7 @@ extern "C" {
 #include "lauxlib.h"
 }
 
+struct lua_State;
+struct luaL_Buffer;
+
 #endif

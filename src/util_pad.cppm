@@ -11,9 +11,6 @@ module;
 #include <fsys/fsys_package.hpp>
 #include <array>
 #include <fsys/vfileptr.h>
-#ifdef __linux__
-#include <uva_archive_file.hpp>
-#endif
 
 export module pragma.pad;
 
