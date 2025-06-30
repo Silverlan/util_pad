@@ -6,9 +6,7 @@ set(PROJ_NAME util_pad)
 pr_add_library(${PROJ_NAME} STATIC)
 
 pr_add_dependency(${PROJ_NAME} util_versioned_archive TARGET PUBLIC)
-if(WIN32)
-	pr_add_external_dependency(${PROJ_NAME} lua LIBRARY)
-endif()
+pr_add_third_party_dependency(${PROJ_NAME} luajit)
 
 pr_init_module(${PROJ_NAME})
 
