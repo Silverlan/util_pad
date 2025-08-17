@@ -10,7 +10,9 @@ module;
 
 export module pragma.pad:vfileptr;
 
-export namespace pragma::pad { class PADPackage; };
+export namespace pragma::pad {
+	class PADPackage;
+};
 
 namespace pragma::pad {
 	class VFilePtrInternalPack : public VFilePtrInternal {
