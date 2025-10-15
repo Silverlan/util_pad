@@ -11,7 +11,7 @@ module pragma.pad;
 import pragma.uva;
 
 //#define MAX_BUFFER_SIZE 5242880
-pragma::pad::VFilePtrInternalPack::VFilePtrInternalPack() : VFilePtrInternal() { m_type = VFILE_PACKAGE; }
+pragma::pad::VFilePtrInternalPack::VFilePtrInternalPack() : VFilePtrInternal() { m_type = EVFile::Package; }
 
 bool pragma::pad::VFilePtrInternalPack::Construct(pragma::pad::PADPackage &package, const std::string &fname, bool bBinary)
 {

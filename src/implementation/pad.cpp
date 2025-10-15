@@ -334,11 +334,11 @@ bool pragma::pad::PackageManager::GetFileFlags(const std::string &name, fsys::Se
 		auto *info = pragma::pad::get_file_info(*pair.second, name, &includeFlags);
 		if(info == nullptr)
 			continue;
-		flags = FVFILE_READONLY | FVFILE_PACKAGE;
+		flags = FVFile::ReadOnly | FVFile::Package;
 		if(info->IsDirectory())
-			flags |= FVFILE_DIRECTORY;
+			flags |= FVFile::Directory;
 		else if(info->IsCompressed())
-			flags |= FVFILE_COMPRESSED;
+			flags |= FVFile::Compressed;
 		return true;
 	}
 	return false;
