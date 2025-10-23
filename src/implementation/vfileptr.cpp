@@ -4,7 +4,7 @@
 module;
 
 #include <cstring>
-#include <fsys/filesystem.h>
+#include <string>
 
 module pragma.pad;
 
