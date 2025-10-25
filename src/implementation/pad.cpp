@@ -6,6 +6,7 @@ module;
 #include <array>
 #include <iostream>
 #include <cstring>
+#include <memory>
 #include <functional>
 #if UPAD_LUA_PRECOMPILE == 1
 #include "lua_wrapper.hpp"

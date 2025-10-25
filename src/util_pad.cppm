@@ -7,6 +7,7 @@ module;
 #include <string>
 #include <memory>
 #include <array>
+#include <vector>
 
 export module pragma.pad;
 
