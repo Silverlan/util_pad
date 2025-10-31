@@ -4,9 +4,6 @@
 #ifdef UPAD_TEST
 
 #include "util_pad.hpp"
-#include <iostream>
-#include <thread>
-#include <algorithm>
 #include <sharedutils/util.h>
 #include <sharedutils/util_file.h>
 #include <sharedutils/util_string.h>

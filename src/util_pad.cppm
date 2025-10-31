@@ -3,11 +3,6 @@
 
 module;
 
-#include <unordered_map>
-#include <string>
-#include <memory>
-#include <array>
-#include <vector>
 
 export module pragma.pad;
 

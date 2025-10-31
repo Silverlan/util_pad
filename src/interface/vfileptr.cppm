@@ -3,9 +3,6 @@
 
 module;
 
-#include <vector>
-#include <string>
-#include <cinttypes>
 
 export module pragma.pad:vfileptr;
 
