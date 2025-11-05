@@ -3,7 +3,6 @@
 
 module;
 
-
 export module pragma.pad:vfileptr;
 
 export import pragma.filesystem;

@@ -3,7 +3,6 @@
 
 module;
 
-
 module pragma.pad;
 
 import pragma.uva;
