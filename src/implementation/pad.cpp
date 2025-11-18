@@ -3,13 +3,6 @@
 
 module;
 
-#include <fsys/filesystem.h>
-#include <sharedutils/util.h>
-#include <sharedutils/util_string.h>
-#include <sharedutils/util_file.h>
-#include <array>
-#include <iostream>
-#include <cstring>
 #if UPAD_LUA_PRECOMPILE == 1
 #include "lua_wrapper.hpp"
 #endif
@@ -328,17 +321,17 @@ bool pragma::pad::PackageManager::Exists(const std::string &name, fsys::SearchFl
 	return false;
 }
 
-bool pragma::pad::PackageManager::GetFileFlags(const std::string &name, fsys::SearchFlags includeFlags, uint64_t &flags) const
+bool pragma::pad::PackageManager::GetFileFlags(const std::string &name, fsys::SearchFlags includeFlags, fsys::FVFile &flags) const
 {
 	for(auto &pair : m_packages) {
 		auto *info = pragma::pad::get_file_info(*pair.second, name, &includeFlags);
 		if(info == nullptr)
 			continue;
-		flags = FVFILE_READONLY | FVFILE_PACKAGE;
+		flags = fsys::FVFile::ReadOnly | fsys::FVFile::Package;
 		if(info->IsDirectory())
-			flags |= FVFILE_DIRECTORY;
+			flags |= fsys::FVFile::Directory;
 		else if(info->IsCompressed())
-			flags |= FVFILE_COMPRESSED;
+			flags |= fsys::FVFile::Compressed;
 		return true;
 	}
 	return false;

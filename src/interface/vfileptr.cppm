@@ -3,12 +3,9 @@
 
 module;
 
-#include <fsys/vfileptr.h>
-#include <vector>
-#include <fsys/fsys_package.hpp>
-#include <fsys/filesystem.h>
-
 export module pragma.pad:vfileptr;
+
+export import pragma.filesystem;
 
 export namespace pragma::pad {
 	class PADPackage;

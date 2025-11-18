@@ -3,15 +3,12 @@
 
 module;
 
-#include <cstring>
-#include <fsys/filesystem.h>
-
 module pragma.pad;
 
 import pragma.uva;
 
 //#define MAX_BUFFER_SIZE 5242880
-pragma::pad::VFilePtrInternalPack::VFilePtrInternalPack() : VFilePtrInternal() { m_type = VFILE_PACKAGE; }
+pragma::pad::VFilePtrInternalPack::VFilePtrInternalPack() : VFilePtrInternal() { m_type = EVFile::Package; }
 
 bool pragma::pad::VFilePtrInternalPack::Construct(pragma::pad::PADPackage &package, const std::string &fname, bool bBinary)
 {
@@ -26,7 +23,7 @@ bool pragma::pad::VFilePtrInternalPack::Construct(pragma::pad::PADPackage &packa
 
 size_t pragma::pad::VFilePtrInternalPack::Read(void *ptr, size_t size)
 {
-	if(Eof() == EOF)
+	if(Eof() == std::char_traits<char>::eof())
 		return std::numeric_limits<size_t>::max();
 	if(m_offset >= GetSize()) {
 		m_bEof = true;
@@ -49,12 +46,12 @@ void pragma::pad::VFilePtrInternalPack::Seek(unsigned long long offset)
 	m_offset = offset;
 	m_bEof = false;
 }
-int32_t pragma::pad::VFilePtrInternalPack::Eof() { return !m_bEof ? 0 : EOF; }
+int32_t pragma::pad::VFilePtrInternalPack::Eof() { return !m_bEof ? 0 : std::char_traits<char>::eof(); }
 int32_t pragma::pad::VFilePtrInternalPack::ReadChar()
 {
 	if(m_offset >= GetSize()) {
 		m_bEof = true;
-		return m_data.empty() ? EOF : m_data.back();
+		return m_data.empty() ? std::char_traits<char>::eof() : m_data.back();
 	}
 	return m_data.at(m_offset++);
 }

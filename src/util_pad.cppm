@@ -3,14 +3,6 @@
 
 module;
 
-#include <unordered_map>
-#include <sharedutils/util_version.h>
-#include <string>
-#include <memory>
-#include <fsys/fsys_package.hpp>
-#include <array>
-#include <fsys/vfileptr.h>
-
 export module pragma.pad;
 
 import :vfileptr;
@@ -62,7 +54,7 @@ export namespace pragma::pad {
 		virtual void FindFiles(const std::string &target, const std::string &path, std::vector<std::string> *resfiles, std::vector<std::string> *resdirs, bool bKeepPath, fsys::SearchFlags includeFlags) const override;
 		virtual bool GetSize(const std::string &name, uint64_t &size) const override;
 		virtual bool Exists(const std::string &name, fsys::SearchFlags includeFlags) const override;
-		virtual bool GetFileFlags(const std::string &name, fsys::SearchFlags includeFlags, uint64_t &flags) const override;
+		virtual bool GetFileFlags(const std::string &name, fsys::SearchFlags includeFlags, fsys::FVFile &flags) const override;
 		virtual VFilePtr OpenFile(const std::string &path, bool bBinary, fsys::SearchFlags includeFlags, fsys::SearchFlags excludeFlags) const override;
 		VFilePtr OpenFile(const std::string &package, const std::string &path, bool bBinary, fsys::SearchFlags includeFlags, fsys::SearchFlags excludeFlags) const;
 	  protected:
