@@ -12,7 +12,7 @@ export namespace pragma::pad {
 };
 
 namespace pragma::pad {
-	class VFilePtrInternalPack : public VFilePtrInternal {
+	class VFilePtrInternalPack : public fs::VFilePtrInternal {
 		std::vector<uint8_t> m_data;
 		uint64_t m_offset = 0;
 		bool m_bValid = false;

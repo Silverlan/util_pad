@@ -17,7 +17,7 @@ static void print_file_info(uva::FileInfo &fi, bool bPrintName, const std::strin
 		std::cout << " (Directory)";
 	else if(fi.IsFile())
 		std::cout << " (File)";
-	std::cout << ": " << util::get_pretty_bytes(fi.size) << " (" << util::get_pretty_bytes(fi.sizeUncompressed) << " uncompressed); CRC: " << fi.crc << std::endl;
+	std::cout << ": " << pragma::util::get_pretty_bytes(fi.size) << " (" << pragma::util::get_pretty_bytes(fi.sizeUncompressed) << " uncompressed); CRC: " << fi.crc << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -27,15 +27,15 @@ int main(int argc, char *argv[])
 		std::this_thread::sleep_for(std::chrono::seconds(5));
 		return EXIT_SUCCESS;
 	}
-	auto launchParams = util::get_launch_parameters(argc, argv);
-	auto version = util::Version {0, 0, 0};
+	auto launchParams = pragma::util::get_launch_parameters(argc, argv);
+	auto version = pragma::util::Version {0, 0, 0};
 	auto itVersion = launchParams.find("-version");
 	if(itVersion != launchParams.end())
-		version = util::Version::FromString(itVersion->second);
+		version = pragma::util::Version::FromString(itVersion->second);
 	std::string file = argv[1];
 	auto path = ufile::get_path_from_filename(file);
 	std::string ext;
-	if(ufile::get_extension(file, &ext) == true && ustring::compare(ext, "pad", false) == true) {
+	if(ufile::get_extension(file, &ext) == true && pragma::string::compare(ext, "pad", false) == true) {
 		auto itPrintHierarchy = launchParams.find("-hierarchy");
 		if(itPrintHierarchy != launchParams.end()) {
 			auto archFile = upad::open(file);
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 						std::cout << "No versions found!" << std::endl;
 					else {
 						VersionInfo *info = nullptr;
-						if(version == util::Version {})
+						if(version == pragma::util::Version {})
 							info = &versions.front();
 						else {
 							auto it = std::find_if(versions.begin(), versions.end(), [&version](const VersionInfo &infoOther) { return (infoOther.version == version) ? true : false; });
